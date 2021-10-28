@@ -1,0 +1,6 @@
+cmake
+face_recognition
+numpy
+flask
+flask_cors
+mysql-connector-python
