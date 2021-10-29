@@ -43,8 +43,10 @@ services:
       MYSQL_PASSWORD: db_user_pass
     ports:
       - "6033:3306"
+    command: --init-file /data/application/init.sql
     volumes:
       - dbdata:/var/lib/mysql
+      - ./init.sql:/data/application/init.sql
   phpmyadmin:
     image: phpmyadmin/phpmyadmin
     container_name: pma
