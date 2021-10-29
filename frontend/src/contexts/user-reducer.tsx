@@ -7,7 +7,7 @@ const initialState: UserState = {
   isLogin: false,
   name: '',
   time: null,
-  username: '',
+  email: '',
 };
 
 const UserContextProvider = ({ children }: any) => {

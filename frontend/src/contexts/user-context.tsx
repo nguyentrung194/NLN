@@ -1,7 +1,7 @@
 export interface UserState {
     isLogin: boolean;
     name: string;
-    username: string;
+    email: string;
     time: any;
 }
 
@@ -12,20 +12,20 @@ export const UserReducer = (state: UserState, action: any) => {
                 ...state,
                 isLogin: true,
                 name: action.payload.name,
-                username: action.payload.username,
+                email: action.payload.email,
                 time: new Date(),
             };
         case "REGISTER":
             return {
                 ...state,
                 name: action.payload.name,
-                username: action.payload.username,
+                email: action.payload.email,
             };
         case "LOGOUT":
             return {
                 isLogin: false,
                 name: '',
-                username: '',
+                email: '',
                 time: null,
             };
         default:

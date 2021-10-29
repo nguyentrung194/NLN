@@ -11,7 +11,7 @@ export const Login = () => {
     const formik = useFormik({
         initialValues: {
             name: '',
-            username: '',
+            email: '',
         },
         onSubmit: async (values) => {
             try {
@@ -22,7 +22,7 @@ export const Login = () => {
                     method: 'GET',
                     data: {
                         name: values.name,
-                        username: values.username,
+                        email: values.email,
                         time,
                     }
                 })
@@ -71,9 +71,9 @@ export const Login = () => {
                         <input
                             className="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline"
                             required
-                            name="username"
+                            name="email"
                             type="text"
-                            value={formik.values.username}
+                            value={formik.values.email}
                             onChange={formik.handleChange}
                         />
                     </div>
