@@ -59,4 +59,4 @@ services:
     ports:
       - 8081:80
 volumes:
-  db_data:
+  dbdata:
