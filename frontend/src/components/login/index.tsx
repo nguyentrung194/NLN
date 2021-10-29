@@ -19,11 +19,10 @@ export const Login = () => {
                 const time = new Date()
                 await axios({
                     url: environment.api + 'login',
-                    method: 'GET',
+                    method: 'POST',
                     data: {
                         name: values.name,
                         email: values.email,
-                        time,
                     }
                 })
 

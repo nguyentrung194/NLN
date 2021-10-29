@@ -33,16 +33,16 @@ def get_data(email):
 def index():
     return render_template("index.html")
 
-@app.route('/register', methods=['GET'])
+@app.route('/register', methods=['POST'])
 def register():
-    email = request.args.get("email")
+    email = request.args.post("email")
     get_data(email)
     if(user == []):
         return "Email exists!"
     con = conn.connect(host='localhost', database='app_db',user='root', password='my_secret_password', charset='utf8', port=3306)
     cursor = con.cursor()
     sql = 'insert into users (name, encoding, email) values(%s,%s,%s)'
-    name = request.args.get("name")
+    name = request.args.post("name")
     video_capture = cv2.VideoCapture(0)
     for n in range(30):
         ret, frame = video_capture.read()
@@ -69,10 +69,10 @@ def register():
     con.close()
     return "Done"
 
-@app.route("/login", methods=['GET'])
+@app.route("/login", methods=['POST'])
 def login():
-    name = request.args.get("name")
-    email = request.args.get("email")
+    name = request.args.post("name")
+    email = request.args.post("email")
 
     get_data(email)
     global user

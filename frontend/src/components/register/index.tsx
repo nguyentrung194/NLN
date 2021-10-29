@@ -18,7 +18,7 @@ export const Register = () => {
                 formik.setSubmitting(true);
                 await axios({
                     url: environment.api + 'register',
-                    method: 'GET',
+                    method: 'POST',
                     data: {
                         name: values.name,
                         email: values.email,
