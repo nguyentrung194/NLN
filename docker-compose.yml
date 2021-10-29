@@ -34,7 +34,7 @@ services:
       - /app/node_modules/
     command: npm start
   mysql:
-    image: mysql:latest
+    image: mysql
     container_name: mysql
     environment:
       MYSQL_ROOT_PASSWORD: my_secret_password
@@ -44,8 +44,8 @@ services:
     ports:
       - "6033:3306"
     volumes:
-      - ./db_data:/var/lib/mysql:rw
-      - ./database/init.sql:/docker-entrypoint-initdb.d/init.sql:ro
+      - ./db_data:/var/lib/mysql
+      - ./database/init.sql:/docker-entrypoint-initdb.d/init.sql
   phpmyadmin:
     image: phpmyadmin/phpmyadmin
     container_name: pma
