@@ -50,6 +50,7 @@ def register():
     face_encodings = []
     while(face_locations == [] and face_encodings == []):
         ret, frame = video_capture.read()
+        print(frame)
         small_frame = cv2.resize(frame, (0, 0), fx=0.25, fy=0.25)
         rgb_small_frame = small_frame[:, :, ::-1]
         # print(rgb_small_frame)
