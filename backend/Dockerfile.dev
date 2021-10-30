@@ -54,6 +54,7 @@ RUN apt-get -qq update \
     && rm -rf /var/lib/apt/lists/* \
     && apt-get -qq autoremove \
     && apt-get -qq clean
+# FROM jjanzic/docker-python3-opencv
 # FROM borda/docker_python-opencv-ffmpeg
 WORKDIR /code
 COPY requirements.txt requirements.txt
