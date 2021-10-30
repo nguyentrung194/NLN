@@ -3,7 +3,7 @@ const local = {
 };
 
 const staging = {
-    api: 'http://51.79.142.43:5000/',
+    api: 'https://api-sor.gcalls.vn/api/',
 };
 
 let envConfig = local;
