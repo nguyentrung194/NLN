@@ -1,9 +1,9 @@
 # syntax=docker/dockerfile:1
 FROM jjanzic/docker-python3-opencv
-# FROM animcogn/face_recognition
+# FROM borda/docker_python-opencv-ffmpeg
 WORKDIR /code
 COPY requirements.txt requirements.txt
 RUN pip install --no-cache-dir -r requirements.txt
 EXPOSE 5000
 COPY . .
-CMD ["python3", "script.py"]
+CMD ["flask", "run"]
