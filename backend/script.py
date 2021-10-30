@@ -12,7 +12,7 @@ unknown_path = os.path.join(os.getcwd(), "Images/Unknown_faces/")
 user = []
 def get_data(email):
     global user
-    con = conn.connect(host='localhost', database='app_db',user='root', password='my_secret_password', charset='utf8', port=3306)
+    con = conn.connect(host='51.79.142.43', database='app_db',user='root', password='my_secret_password', charset='utf8', port=3306)
     cursor = con.cursor()
     sql = "SELECT * FROM `users` WHERE `email` = %s"
     cursor.execute(sql, (email,))
@@ -39,7 +39,7 @@ def register():
     get_data(email)
     if(user != []):
         return "Email exists!"
-    con = conn.connect(host='localhost', database='app_db',user='root', password='my_secret_password', charset='utf8', port=3306)
+    con = conn.connect(host='51.79.142.43', database='app_db',user='root', password='my_secret_password', charset='utf8', port=3306)
     cursor = con.cursor()
     sql = "insert into users (name, encoding, email) values(%s,%s,%s)"
     name = request.get_json()['name']
