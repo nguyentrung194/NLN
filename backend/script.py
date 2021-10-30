@@ -29,11 +29,11 @@ def get_data(email):
     cursor.close()
     con.close()
 
-@app.route('/')
+@app.route('/api')
 def index():
     return render_template("index.html")
 
-@app.route('/register', methods=['POST'])
+@app.route('/api/register', methods=['POST'])
 def register():
     email = request.get_json()['email']
     get_data(email)
@@ -77,7 +77,7 @@ def register():
     con.close()
     return "Done"
 
-@app.route("/login", methods=['POST'])
+@app.route("/api/login", methods=['POST'])
 def login():
     name = request.get_json()['name']
     email = request.get_json()['email']
