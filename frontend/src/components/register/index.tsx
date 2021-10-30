@@ -19,6 +19,9 @@ export const Register = () => {
                 await axios({
                     url: environment.api + 'register',
                     method: 'POST',
+                    headers: {
+                        'Content-type': 'application/json'
+                    },
                     data: {
                         name: values.name,
                         email: values.email,

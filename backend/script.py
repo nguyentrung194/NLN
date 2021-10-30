@@ -1,26 +1,26 @@
 import face_recognition
 import cv2
 import numpy as np
-# import os
+import os
 from flask import *
 from flask_cors import CORS
 import mysql.connector as conn
 app = Flask(__name__)
 CORS(app)
-# known_path = os.path.join(os.getcwd(), "Images/Known_faces/")
-# unknown_path = os.path.join(os.getcwd(), "Images/Unknown_faces/")
+known_path = os.path.join(os.getcwd(), "Images/Known_faces/")
+unknown_path = os.path.join(os.getcwd(), "Images/Unknown_faces/")
 user = []
 def get_data(email):
     global user
     con = conn.connect(host='localhost', database='app_db',user='root', password='my_secret_password', charset='utf8', port=3306)
     cursor = con.cursor()
-    sql = 'SELECT * FROM users WHERE email = %s'
-    cursor.execute(sql, email)
-    result = cursor.fetchall()
-    for i in result:
+    sql = "SELECT * FROM `users` WHERE `email` = %s"
+    cursor.execute(sql, (email,))
+    result = cursor.fetchone()
+    if(result != None):
         l = []
-        l.append(i[1])
-        string = i[3][1:-2]
+        l.append(result[1])
+        string = result[3][1:-2]
         nums = []
         for x in string.split():
             nums.append(float(x.strip()))
@@ -35,27 +35,35 @@ def index():
 
 @app.route('/register', methods=['POST'])
 def register():
-    email = request.args.post("email")
+    email = request.get_json()['email']
     get_data(email)
-    if(user == []):
+    if(user != []):
         return "Email exists!"
     con = conn.connect(host='localhost', database='app_db',user='root', password='my_secret_password', charset='utf8', port=3306)
     cursor = con.cursor()
-    sql = 'insert into users (name, encoding, email) values(%s,%s,%s)'
-    name = request.args.post("name")
+    sql = "insert into users (name, encoding, email) values(%s,%s,%s)"
+    name = request.get_json()['name']
     video_capture = cv2.VideoCapture(0)
-    for n in range(30):
+    for n in range(20):
         ret, frame = video_capture.read()
-    small_frame = cv2.resize(frame, (0, 0), fx=0.25, fy=0.25)
-    rgb_small_frame = small_frame[:, :, ::-1]
-    face_locations = face_recognition.face_locations(rgb_small_frame)
-    face_encodings = face_recognition.face_encodings(rgb_small_frame, face_locations)
+    face_locations = []
+    face_encodings = []
+    while(face_locations == [] and face_encodings == []):
+        ret, frame = video_capture.read()
+        small_frame = cv2.resize(frame, (0, 0), fx=0.25, fy=0.25)
+        rgb_small_frame = small_frame[:, :, ::-1]
+        # print(rgb_small_frame)
+
+        face_locations = face_recognition.face_locations(rgb_small_frame)
+        print(face_locations)
+        face_encodings = face_recognition.face_encodings(rgb_small_frame, face_locations)
+        print(face_encodings)
     # dir = os.path.join(known_path,name)
     # if(not os.path.isdir(dir)):
     #     os.mkdir(dir)
     # os.chdir(dir) 
-    rand_no = np.random.random_sample()
-    cv2.imwrite(str(rand_no)+".jpg", frame)
+    # rand_no = np.random.random_sample()
+    # cv2.imwrite(str(rand_no)+".jpg", frame)
     video_capture.release()
     cv2.destroyAllWindows()
     encoding = ""
@@ -71,8 +79,8 @@ def register():
 
 @app.route("/login", methods=['POST'])
 def login():
-    name = request.args.post("name")
-    email = request.args.post("email")
+    name = request.get_json()['name']
+    email = request.get_json()['email']
 
     get_data(email)
     global user
@@ -83,14 +91,18 @@ def login():
         known_face_names = [i[0] for i in user]
         face_locations = []
         face_encodings = []
-        face_names = []
+        # face_names = []
         video_capture = cv2.VideoCapture(0)
-        for n in range(30):
+        for n in range(20):
             ret, frame = video_capture.read()
-        small_frame = cv2.resize(frame, (0, 0), fx=0.25, fy=0.25)
-        rgb_small_frame = small_frame[:, :, ::-1]
-        face_locations = face_recognition.face_locations(rgb_small_frame)
-        face_encodings = face_recognition.face_encodings(rgb_small_frame, face_locations)
+        countOutTime = 0
+        while(face_locations == [] and face_encodings == [] and countOutTime < 100):
+            ret, frame = video_capture.read()
+            small_frame = cv2.resize(frame, (0, 0), fx=0.25, fy=0.25)
+            rgb_small_frame = small_frame[:, :, ::-1]
+            face_locations = face_recognition.face_locations(rgb_small_frame)
+            face_encodings = face_recognition.face_encodings(rgb_small_frame, face_locations)
+            countOutTime = countOutTime + 1
         face_names = []
         if(face_encodings == []):
             msg = "You are unknown first register your self"

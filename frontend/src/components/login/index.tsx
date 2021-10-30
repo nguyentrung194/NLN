@@ -17,9 +17,12 @@ export const Login = () => {
             try {
                 formik.setSubmitting(true);
                 const time = new Date()
-                await axios({
+                const messName = await axios({
                     url: environment.api + 'login',
                     method: 'POST',
+                    headers: {
+                        'Content-type': 'application/json'
+                    },
                     data: {
                         name: values.name,
                         email: values.email,
@@ -28,7 +31,7 @@ export const Login = () => {
 
                 login({ ...values, time, isLogin: true })
 
-                addToast("Login success!", {
+                addToast(`Wellcome ${messName.data}`, {
                     appearance: 'success',
                     autoDismiss: true,
                 });
