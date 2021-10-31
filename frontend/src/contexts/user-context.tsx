@@ -30,6 +30,7 @@ export const UserReducer = (state: UserState, action: any) => {
                 ...state,
                 name: action.payload.name,
                 email: action.payload.email,
+                images: action.payload.images,
             };
         case "LOGOUT":
             return {

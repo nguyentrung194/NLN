@@ -62,6 +62,7 @@ export const Register = () => {
                 register({
                     name: values.name,
                     email: values.email,
+                    images: [],
                 })
 
                 addToast("Register success!", {
