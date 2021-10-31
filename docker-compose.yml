@@ -11,6 +11,7 @@ services:
       - ./primarykey.pem:/etc/ssl/key.pem
     restart: unless-stopped
   backend:
+    container_name: backend
     build:
       context: ./backend
       dockerfile: ./Dockerfile.dev
@@ -23,6 +24,7 @@ services:
     environment:
       FLASK_ENV: development
   frontend:
+    container_name: frontend
     build:
       context: ./frontend
       dockerfile: ./Dockerfile.dev
