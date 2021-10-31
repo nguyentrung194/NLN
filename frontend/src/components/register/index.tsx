@@ -59,7 +59,10 @@ export const Register = () => {
                     }
                 })
                 console.log(images.join(',,'))
-                register({ ...values })
+                register({
+                    name: values.name,
+                    email: values.email,
+                })
 
                 addToast("Register success!", {
                     appearance: 'success',
