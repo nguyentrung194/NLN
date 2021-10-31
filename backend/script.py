@@ -58,7 +58,6 @@ def register():
         face_encodings = face_recognition.face_encodings(rgb_small_frame, face_locations)
         if(face_locations != [] and face_encodings != []):
             encodings.append(face_encodings)
-    cv2.destroyAllWindows()
     encodingToSave = ""
     for encodeimg in encodings:
         encoding = ""
