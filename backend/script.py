@@ -129,4 +129,4 @@ def login():
                     face_names.append(name)
     return ",".join(face_names)
 if __name__ == '__main__':
-    app.run(debug=True)
+    app.run(debug=False)
