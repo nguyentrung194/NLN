@@ -1,17 +1,15 @@
 import face_recognition
 import cv2
+import base64
 import numpy as np
-import os
 from flask import *
 from flask_cors import CORS
 import mysql.connector as conn
 app = Flask(__name__)
 CORS(app)
-known_path = os.path.join(os.getcwd(), "Images/Known_faces/")
-unknown_path = os.path.join(os.getcwd(), "Images/Unknown_faces/")
-user = []
+
 def get_data(email):
-    global user
+    user = []
     con = conn.connect(host='51.79.142.43', database='app_db',user='root', password='my_secret_password', charset='utf8', port=3306)
     cursor = con.cursor()
     sql = "SELECT * FROM `users` WHERE `email` = %s"
@@ -20,14 +18,17 @@ def get_data(email):
     if(result != None):
         l = []
         l.append(result[1])
-        string = result[3][1:-2]
-        nums = []
-        for x in string.split():
-            nums.append(float(x.strip()))
-        l.append(nums)
-        user.append(l)
+        strings = result[3].split(";")
+        for string in strings:
+            strx = string[1:-2]
+            nums = []
+            for x in strx.split():
+                nums.append(float(x.strip()))
+            l.append(nums)
+            user.append(l)
     cursor.close()
     con.close()
+    return user
 
 @app.route('/api')
 def index():
@@ -36,41 +37,36 @@ def index():
 @app.route('/api/register', methods=['POST'])
 def register():
     email = request.get_json()['email']
-    get_data(email)
+    user = get_data(email)
     if(user != []):
         return "Email exists!"
     con = conn.connect(host='51.79.142.43', database='app_db',user='root', password='my_secret_password', charset='utf8', port=3306)
     cursor = con.cursor()
     sql = "insert into users (name, encoding, email) values(%s,%s,%s)"
     name = request.get_json()['name']
-    video_capture = cv2.VideoCapture(0)
-    for n in range(20):
-        ret, frame = video_capture.read()
-    face_locations = []
-    face_encodings = []
-    while(face_locations == [] and face_encodings == []):
-        ret, frame = video_capture.read()
-        print(frame)
-        small_frame = cv2.resize(frame, (0, 0), fx=0.25, fy=0.25)
+    imgUpload = request.get_json()['encode']
+    imgs = imgUpload.split(',,')
+    encodings = []
+    for img in imgs:
+        nparr = np.fromstring(base64.b64decode(img), np.uint8)
+        img2 = cv2.imdecode(nparr, cv2.IMREAD_COLOR)
+        face_locations = []
+        face_encodings = []
+        small_frame = cv2.resize(img2, (0, 0), fx=0.25, fy=0.25)
         rgb_small_frame = small_frame[:, :, ::-1]
-        # print(rgb_small_frame)
-
         face_locations = face_recognition.face_locations(rgb_small_frame)
-        print(face_locations)
         face_encodings = face_recognition.face_encodings(rgb_small_frame, face_locations)
-        print(face_encodings)
-    # dir = os.path.join(known_path,name)
-    # if(not os.path.isdir(dir)):
-    #     os.mkdir(dir)
-    # os.chdir(dir) 
-    # rand_no = np.random.random_sample()
-    # cv2.imwrite(str(rand_no)+".jpg", frame)
-    video_capture.release()
+        if(face_locations != [] and face_encodings != []):
+            encodings.append(face_encodings)
     cv2.destroyAllWindows()
-    encoding = ""
-    for i in face_encodings:
-        encoding += str(i)+","
-    li = [name, encoding, email]
+    encodingToSave = ""
+    for encodeimg in encodings:
+        encoding = ""
+        for i in encodeimg:
+            encoding += str(i)+","
+        encodingToSave += str(encoding) + ";"
+    print(len(encodingToSave))
+    li = [name, encodingToSave, email]
     value = tuple(li)
     cursor.execute(sql, value)
     con.commit()
@@ -82,56 +78,55 @@ def register():
 def login():
     name = request.get_json()['name']
     email = request.get_json()['email']
-
-    get_data(email)
-    global user
+    user = get_data(email)
     if(user == []):
         msg = "You are unknown first register your self"
     else:
         known_face_encodings = [i[1] for i in user]
+        print("known_face_encodings")
+        print(len(known_face_encodings))
         known_face_names = [i[0] for i in user]
-        face_locations = []
-        face_encodings = []
-        # face_names = []
-        video_capture = cv2.VideoCapture(0)
-        for n in range(20):
-            ret, frame = video_capture.read()
-        countOutTime = 0
-        while(face_locations == [] and face_encodings == [] and countOutTime < 100):
-            ret, frame = video_capture.read()
-            small_frame = cv2.resize(frame, (0, 0), fx=0.25, fy=0.25)
+    
+        imgUpload = request.get_json()['encode']
+        imgs = imgUpload.split(',,')
+        print("imgs")
+        print(len(imgs))
+        encodings = []
+        for img in imgs:
+            nparr = np.fromstring(base64.b64decode(img), np.uint8)
+            img2 = cv2.imdecode(nparr, cv2.IMREAD_COLOR)
+            face_locations = []
+            face_encodings = []
+            small_frame = cv2.resize(img2, (0, 0), fx=0.25, fy=0.25)
             rgb_small_frame = small_frame[:, :, ::-1]
             face_locations = face_recognition.face_locations(rgb_small_frame)
             face_encodings = face_recognition.face_encodings(rgb_small_frame, face_locations)
-            countOutTime = countOutTime + 1
+            if(face_locations != [] and face_encodings != []):
+                encodings.append(face_encodings)
+
         face_names = []
-        if(face_encodings == []):
-            msg = "You are unknown first register your self"
+        print("encodings")
+        print(len(encodings))
+        if(encodings == []):
+            msg = "Faces not fount!"
         else:
-            for face_encoding in face_encodings:
-                matches = face_recognition.compare_faces(known_face_encodings, face_encoding)
-                name = "Unknown"
-                face_distances = face_recognition.face_distance(known_face_encodings, face_encoding)
-                best_match_index = np.argmin(face_distances)
-                if matches[best_match_index]:
-                    name = known_face_names[best_match_index]
-                if(name == "Unknown"):
-                    msg = "You are unknown first register your self"
-                else:
-                    msg = name
-                face_names.append(name)
-            # for (top, right, bottom, left), name in zip(face_locations, face_names):
-            #     top *= 4
-            #     right *= 4
-            #     bottom *= 4
-            #     left *= 4
-            #     cv2.rectangle(frame, (left, top), (right, bottom), (0, 0, 255), 2)
-            #     cv2.rectangle(frame, (left, bottom - 35), (right, bottom), (0, 0, 255), cv2.FILLED)
-            #     font = cv2.FONT_HERSHEY_DUPLEX
-            #     cv2.putText(frame, name, (left + 6, bottom - 6), font, 1.0, (255, 255, 255), 1)
-            # os.chdir(unknown_path)
-            # rand_no = np.random.random_sample()
-            # cv2.imwrite(str(rand_no)+".jpg", frame)
-    return msg
+            for encoding in encodings:
+                for face_encoding in encoding:
+                    print("encoding")
+                    print(len(encoding))
+                    matches = face_recognition.compare_faces(known_face_encodings, face_encoding)
+                    name = "Unknown"
+                    face_distances = face_recognition.face_distance(known_face_encodings, face_encoding)
+                    best_match_index = np.argmin(face_distances)
+                    print("best_match_index")
+                    print(best_match_index)
+                    if best_match_index >= 0:
+                        name = known_face_names[best_match_index]
+                    if(name == "Unknown"):
+                        msg = "You are unknown first register your self"
+                    else:
+                        msg = name
+                    face_names.append(name)
+    return ",".join(face_names)
 if __name__ == '__main__':
     app.run(debug=True)

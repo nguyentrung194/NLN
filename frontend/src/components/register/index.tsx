@@ -1,12 +1,42 @@
+/* eslint-disable jsx-a11y/img-redundant-alt */
 import axios from "axios";
 import { useFormik } from "formik";
-import React, { useContext } from "react";
+import React, { useContext, useRef, useState } from "react";
 import { useToasts } from "react-toast-notifications";
+import Webcam from "react-webcam";
 import environment from "../../config";
 import { UserContext } from "../../contexts/user-reducer";
 
+function decodeBase64Image(dataString: string) {
+    const matches: any = dataString.match(/^data:([A-Za-z-+/]+);base64,(.+)$/);
+    const response: any = {};
+
+    if (matches?.length !== 3) {
+        return new Error('Invalid input string');
+    }
+
+    response.type = matches[1];
+    response.data = matches[2];
+    console.log(Buffer.from(matches[2], 'base64'))
+
+    return response;
+}
+
 export const Register = () => {
-    const { register } = useContext(UserContext);
+    const { register, takePiture, images } = useContext(UserContext);
+    const videoConstraints = {
+        width: 1280,
+        height: 720,
+        facingMode: "user"
+    };
+    const webcamRef: any = useRef(null);
+    const [imgSrc, setImgSrc] = useState('')
+    const capture = () => {
+        const imageSrc = webcamRef.current.getScreenshot();
+        takePiture({ image: decodeBase64Image(imageSrc).data })
+        console.log(images)
+        setImgSrc(imageSrc)
+    };
     const { addToast } = useToasts();
     const formik = useFormik({
         initialValues: {
@@ -25,9 +55,10 @@ export const Register = () => {
                     data: {
                         name: values.name,
                         email: values.email,
+                        encode: images.join(',,'),
                     }
                 })
-
+                console.log(images.join(',,'))
                 register({ ...values })
 
                 addToast("Register success!", {
@@ -47,6 +78,22 @@ export const Register = () => {
     });
     return (
         <div className="flex justify-center items-center min-h-screen">
+            <div className="max-w-sm pr-5">
+                {imgSrc ? <img src={imgSrc} alt="image preview2" /> : null}
+                <p>Count image: {images.length}</p>
+                <Webcam
+                    audio={false}
+                    height={720}
+                    forceScreenshotSourceSize={true}
+                    mirrored={true}
+                    screenshotQuality={1}
+                    ref={webcamRef}
+                    screenshotFormat="image/jpeg"
+                    width={1280}
+                    videoConstraints={videoConstraints}
+                />
+                <button onClick={capture}>Capture photo</button>
+            </div>
             <div className="w-full max-w-xs">
                 <form
                     className="bg-white shadow-md rounded px-8 pt-6 pb-8 mb-4"

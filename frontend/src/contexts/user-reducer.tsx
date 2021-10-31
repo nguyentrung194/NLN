@@ -1,17 +1,28 @@
 import React, { createContext, useReducer } from "react";
 import { UserReducer, UserState } from "./user-context";
 
-export const UserContext = createContext<any>(null);
+export const UserContext = createContext<UserState>({
+  isLogin: false,
+  name: '',
+  time: null,
+  email: '',
+  images: [],
+});
 
 const initialState: UserState = {
   isLogin: false,
   name: '',
   time: null,
   email: '',
+  images: [],
 };
 
 const UserContextProvider = ({ children }: any) => {
   const [state, dispatch] = useReducer(UserReducer, initialState);
+
+  const takePiture = (payload: any) => {
+    dispatch({ type: "TAKE_PITURE", payload });
+  };
 
   const login = (payload: any) => {
     dispatch({ type: "LOGIN", payload });
@@ -26,6 +37,7 @@ const UserContextProvider = ({ children }: any) => {
   };
 
   const contextValues = {
+    takePiture,
     login,
     register,
     logout,

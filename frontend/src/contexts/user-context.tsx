@@ -3,10 +3,20 @@ export interface UserState {
     name: string;
     email: string;
     time: any;
+    images: any[];
+    takePiture?: any;
+    login?: any;
+    register?: any;
+    logout?: any;
 }
 
 export const UserReducer = (state: UserState, action: any) => {
     switch (action.type) {
+        case "TAKE_PITURE":
+            return {
+                ...state,
+                images: [...state.images, action.payload.image],
+            };
         case "LOGIN":
             return {
                 ...state,
@@ -23,6 +33,7 @@ export const UserReducer = (state: UserState, action: any) => {
             };
         case "LOGOUT":
             return {
+                images: [],
                 isLogin: false,
                 name: '',
                 email: '',
