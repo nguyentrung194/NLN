@@ -38,7 +38,7 @@ def index():
     return render_template("index.html")
 
 @app.route('/api/histories', methods=['GET'])
-def register():
+def histories():
     user_id = request.get_json()['user_id']
     sql = "SELECT * FROM `login_histories` WHERE user_id = %s"
     HOST = os.getenv('HOST') or "localhost"
