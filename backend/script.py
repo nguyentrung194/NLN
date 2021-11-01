@@ -1,6 +1,7 @@
 import face_recognition
 import cv2
 import base64
+import os
 import numpy as np
 from flask import *
 from flask_cors import CORS
@@ -10,7 +11,8 @@ CORS(app)
 
 def get_data(email):
     user = []
-    con = conn.connect(host='51.79.142.43', database='app_db',user='root', password='my_secret_password', charset='utf8', port=3306)
+    HOST = os.getenv('HOST') or "localhost"
+    con = conn.connect(host=HOST, database='app_db',user='root', password='my_secret_password', charset='utf8', port=3306)
     cursor = con.cursor()
     sql = "SELECT * FROM `users` WHERE `email` = %s"
     cursor.execute(sql, (email,))
@@ -41,7 +43,8 @@ def register():
     user = get_data(email)
     if(user != []):
         return "Email exists!"
-    con = conn.connect(host='51.79.142.43', database='app_db',user='root', password='my_secret_password', charset='utf8', port=3306)
+    HOST = os.getenv('HOST') or "localhost"
+    con = conn.connect(host=HOST, database='app_db',user='root', password='my_secret_password', charset='utf8', port=3306)
     cursor = con.cursor()
     sql = "insert into users (name, encoding, email) values(%s,%s,%s)"
     name = request.get_json()['name']
@@ -82,7 +85,8 @@ def login():
     if(user == []):
         msg = "You are unknown first register your self"
     else:
-        con = conn.connect(host='51.79.142.43', database='app_db',user='root', password='my_secret_password', charset='utf8', port=3306)
+        HOST = os.getenv('HOST') or "localhost"
+        con = conn.connect(host=HOST, database='app_db',user='root', password='my_secret_password', charset='utf8', port=3306)
         cursor = con.cursor()
         sql = "insert into login_histories (user_id, class_id) values(%s,%s)"
         known_face_encodings = [i[1] for i in user]

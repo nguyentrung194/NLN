@@ -6,5 +6,6 @@ COPY requirements.txt requirements.txt
 RUN pip install --no-cache-dir -r requirements.txt
 EXPOSE 5000
 ENV FLASK_ENV=development
+ENV HOST=51.79.142.43
 COPY . .
 CMD ["flask", "run"]
