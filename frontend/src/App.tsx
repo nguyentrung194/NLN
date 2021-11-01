@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useContext } from 'react';
 import './App.css';
 import { Navigate, Route, Routes } from 'react-router-dom';
 import { HomeRoute } from './route/home.route';
@@ -6,19 +6,59 @@ import { RegisterRoute } from './route/register.route';
 import { LoginRoute } from './route/login.route';
 import { AdminRoute } from './route/admin.route';
 import { NavLayout } from './layouts/nav';
+import { UserContext } from './contexts/user-reducer';
+import { UserRoute } from './route/user.route';
+import { ErrorRoute } from './route/error.route';
 
 function App() {
-  return (
-    <Routes>
-      <Route element={<NavLayout />}>
-        <Route path="/" element={<HomeRoute />} />
-        <Route path="/login" element={<LoginRoute />} />
-        <Route path="/register" element={<RegisterRoute />} />
-        <Route path="/admin" element={<AdminRoute />} />
-        <Route path="/*" element={<Navigate to="/" replace={true} />} />
-      </Route>
-    </Routes>
-  );
+  const { isLogin } = useContext(UserContext);
+  if (!isLogin) {
+    return (
+      <Routes>
+        <Route element={<NavLayout />}>
+          <Route path="/" element={<HomeRoute />} />
+          <Route path="/login" element={<LoginRoute />} />
+          <Route path="/register" element={<RegisterRoute />} />
+          <Route path="/admin" element={<AdminRoute />} />
+          <Route path="/*" element={<Navigate to="/" replace={true} />} />
+        </Route>
+      </Routes>
+    );
+  }
+  else {
+    if (0) { // role admin
+      return (
+        <Routes>
+          <Route element={<NavLayout />}>
+            <Route path="/" element={<Navigate to="/admin" replace={true} />} />
+            <Route path="/admin" element={<AdminRoute />} />
+            <Route path="/*" element={<Navigate to="/" replace={true} />} />
+          </Route>
+        </Routes>
+      );
+    }
+    else if (1) { // role user
+      return (
+        <Routes>
+          <Route element={<NavLayout />}>
+            <Route path="/" element={<Navigate to="/user" replace={true} />} />
+            <Route path="/user" element={<UserRoute />} />
+            <Route path="/*" element={<Navigate to="/" replace={true} />} />
+          </Route>
+        </Routes>
+      );
+    } else {
+      return (
+        <Routes>
+          <Route element={<NavLayout />}>
+            <Route path="/" element={<Navigate to="/404" replace={true} />} />
+            <Route path="/404" element={<ErrorRoute />} />
+            <Route path="/*" element={<Navigate to="/" replace={true} />} />
+          </Route>
+        </Routes>
+      );
+    }
+  }
 }
 
 export default App;

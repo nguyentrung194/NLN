@@ -1,4 +1,5 @@
 export interface UserState {
+    user_id?: any;
     isLogin: boolean;
     name: string;
     email: string;

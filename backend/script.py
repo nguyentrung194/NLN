@@ -15,7 +15,7 @@ def get_data(email):
     con = conn.connect(host=HOST, database='app_db',user='root', password='my_secret_password', charset='utf8', port=3306)
     cursor = con.cursor()
     sql = "SELECT * FROM `users` WHERE `email` = %s"
-    cursor.execute(sql, (email,))
+    cursor.execute(sql, (email))
     result = cursor.fetchone()
     if(result != None):
         l = []
@@ -36,6 +36,20 @@ def get_data(email):
 @app.route('/api')
 def index():
     return render_template("index.html")
+
+@app.route('/api/histories', methods=['GET'])
+def register():
+    user_id = request.get_json()['user_id']
+    sql = "SELECT * FROM `login_histories` WHERE user_id = %s"
+    HOST = os.getenv('HOST') or "localhost"
+    con = conn.connect(host=HOST, database='app_db',user='root', password='my_secret_password', charset='utf8', port=3306)
+    cursor = con.cursor()
+    
+    cursor.execute(sql, (user_id))
+    result = cursor.fetchall()
+    cursor.close()
+    con.close()
+    return result
 
 @app.route('/api/register', methods=['POST'])
 def register():
@@ -83,12 +97,11 @@ def login():
     email = request.get_json()['email']
     user = get_data(email)
     if(user == []):
-        msg = "You are unknown first register your self"
+        return "You are unknown first register your self"
     else:
         HOST = os.getenv('HOST') or "localhost"
         con = conn.connect(host=HOST, database='app_db',user='root', password='my_secret_password', charset='utf8', port=3306)
         cursor = con.cursor()
-        sql = "insert into login_histories (user_id, class_id) values(%s,%s)"
         known_face_encodings = [i[1] for i in user]
         print("known_face_encodings")
         print(len(known_face_encodings))
@@ -134,10 +147,11 @@ def login():
         userId = [i[2] for i in user][0]
         print(userId)
         print(class_id)
+        sql = "insert into login_histories (user_id, class_id) values(%s,%s)"
         cursor.execute(sql, (userId, class_id))
         con.commit()
         cursor.close()
         con.close()
-    return ",".join(face_names)
+    return ",".join(face_names) + "," + userId
 if __name__ == '__main__':
     app.run(debug=True)
