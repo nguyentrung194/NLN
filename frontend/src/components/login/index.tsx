@@ -57,11 +57,11 @@ export const Login = () => {
                         name: values.name,
                         email: values.email,
                         encode: images.join(",,"),
+                        class_id: 1,
                     }
                 })
                 const arrayName: Array<String> = messName.data.split(",")
                 const lengthTrue = arrayName.filter(el=>el===values.name).length
-                // const pridict = (lengthTrue/images.length)*100
                 login({ ...values, time, isLogin: true })
 
                 addToast(`% ${lengthTrue} / ${images.length}`, {

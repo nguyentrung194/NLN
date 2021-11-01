@@ -25,6 +25,7 @@ def get_data(email):
             for x in strx.split():
                 nums.append(float(x.strip()))
             l.append(nums)
+            l.append(result[0])
             user.append(l)
     cursor.close()
     con.close()
@@ -81,12 +82,16 @@ def login():
     if(user == []):
         msg = "You are unknown first register your self"
     else:
+        con = conn.connect(host='51.79.142.43', database='app_db',user='root', password='my_secret_password', charset='utf8', port=3306)
+        cursor = con.cursor()
+        sql = "insert into login_histories (user_id, class_id) values(%s,%s)"
         known_face_encodings = [i[1] for i in user]
         print("known_face_encodings")
         print(len(known_face_encodings))
         known_face_names = [i[0] for i in user]
     
         imgUpload = request.get_json()['encode']
+        class_id = request.get_json()['class_id']
         imgs = imgUpload.split(',,')
         print("imgs")
         print(len(imgs))
@@ -111,21 +116,24 @@ def login():
         else:
             for encoding in encodings:
                 for face_encoding in encoding:
-                    print("encoding")
-                    print(len(encoding))
                     matches = face_recognition.compare_faces(known_face_encodings, face_encoding)
                     name = "Unknown"
                     face_distances = face_recognition.face_distance(known_face_encodings, face_encoding)
                     best_match_index = np.argmin(face_distances)
-                    print("best_match_index")
-                    print(best_match_index)
-                    if best_match_index >= 0:
+                    if (face_distances[best_match_index] <= 0.3):
                         name = known_face_names[best_match_index]
                     if(name == "Unknown"):
                         msg = "You are unknown first register your self"
                     else:
                         msg = name
                     face_names.append(name)
+        userId = [i[2] for i in user][0]
+        print(userId)
+        print(class_id)
+        cursor.execute(sql, (userId, class_id))
+        con.commit()
+        cursor.close()
+        con.close()
     return ",".join(face_names)
 if __name__ == '__main__':
-    app.run(debug=False)
+    app.run(debug=True)
