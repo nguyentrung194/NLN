@@ -98,11 +98,11 @@ def login():
     user = get_data(email)
     imgUpload = request.get_json()['encode']
     class_id = request.get_json()['class_id']
-    userId = [i[2] for i in user][0]
     sql = "insert into login_histories (user_id, class_id) values(%s,%s)"
     if(user == []):
         return "You are unknown first register your self, -1"
     else:
+        userId = [i[2] for i in user][0]
         HOST = os.getenv('HOST') or "localhost"
         con = conn.connect(host=HOST, database='app_db',user='root', password='my_secret_password', charset='utf8', port=3306)
         cursor = con.cursor()
