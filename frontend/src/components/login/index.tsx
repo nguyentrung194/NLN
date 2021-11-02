@@ -61,12 +61,28 @@ export const Login = () => {
                 })
                 const arrayMess = messName.data.split(",")
                 const name = arrayMess[0]
-                login({ ...values, name: name, time, isLogin: true, user_id: arrayMess[-1] })
+                if (name === "You are unknown first register your self") {
+                    addToast("You are unknown first register your self", {
+                        appearance: 'info',
+                        autoDismiss: true,
+                    });
 
-                addToast(`Wellcome ${name}`, {
-                    appearance: 'success',
-                    autoDismiss: true,
-                });
+                }
+                else if (name === "Unknown") {
+                    addToast("Unknown", {
+                        appearance: 'info',
+                        autoDismiss: true,
+                    });
+                }
+                else {
+                    login({ ...values, name: name, time, isLogin: true, user_id: arrayMess[-1] })
+
+                    addToast(`Wellcome ${name}`, {
+                        appearance: 'success',
+                        autoDismiss: true,
+                    });
+                }
+
                 formik.setSubmitting(false);
             } catch (error) {
                 addToast("Let try again!", {

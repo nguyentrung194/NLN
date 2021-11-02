@@ -15,7 +15,7 @@ def get_data(email):
     con = conn.connect(host=HOST, database='app_db',user='root', password='my_secret_password', charset='utf8', port=3306)
     cursor = con.cursor()
     sql = "SELECT * FROM `users` WHERE `email` = %s"
-    cursor.execute(sql, (email))
+    cursor.execute(sql, (email,))
     result = cursor.fetchone()
     if(result != None):
         l = []
@@ -23,6 +23,7 @@ def get_data(email):
         strings = result[3].split(";")
         for string in strings:
             strx = string[1:-2]
+            print(strx)
             nums = []
             for x in strx.split():
                 nums.append(float(x.strip()))
@@ -45,7 +46,7 @@ def histories():
     con = conn.connect(host=HOST, database='app_db',user='root', password='my_secret_password', charset='utf8', port=3306)
     cursor = con.cursor()
     
-    cursor.execute(sql, (user_id))
+    cursor.execute(sql, (user_id,))
     result = cursor.fetchall()
     cursor.close()
     con.close()
@@ -95,8 +96,12 @@ def register():
 def login():
     email = request.get_json()['email']
     user = get_data(email)
+    imgUpload = request.get_json()['encode']
+    class_id = request.get_json()['class_id']
+    userId = [i[2] for i in user][0]
+    sql = "insert into login_histories (user_id, class_id) values(%s,%s)"
     if(user == []):
-        return "You are unknown first register your self"
+        return "You are unknown first register your self, -1"
     else:
         HOST = os.getenv('HOST') or "localhost"
         con = conn.connect(host=HOST, database='app_db',user='root', password='my_secret_password', charset='utf8', port=3306)
@@ -105,9 +110,6 @@ def login():
         print("known_face_encodings")
         print(len(known_face_encodings))
         known_face_names = [i[0] for i in user]
-    
-        imgUpload = request.get_json()['encode']
-        class_id = request.get_json()['class_id']
         imgs = imgUpload.split(',,')
         print("imgs")
         print(len(imgs))
@@ -128,29 +130,37 @@ def login():
         print("encodings")
         print(len(encodings))
         if(encodings == []):
-            msg = "Faces not fount!"
+            cursor.execute(sql, (userId, "-2"))
+            con.commit()
+            cursor.close()
+            con.close()
+            return "Faces not found!" + "," + str(-1)
         else:
             for encoding in encodings:
                 for face_encoding in encoding:
                     matches = face_recognition.compare_faces(known_face_encodings, face_encoding)
+                    print("print(matches)")
+                    print(matches)
                     name = "Unknown"
                     face_distances = face_recognition.face_distance(known_face_encodings, face_encoding)
+                    print("print(face_distances)")
+                    print(face_distances)
                     best_match_index = np.argmin(face_distances)
                     if (face_distances[best_match_index] <= 0.3):
                         name = known_face_names[best_match_index]
                     if(name == "Unknown"):
-                        msg = "You are unknown first register your self"
-                    else:
-                        msg = name
+                        cursor.execute(sql, (userId, "-1"))
+                        con.commit()
+                        cursor.close()
+                        con.close()
+                        return "Unknown" + "," + str(-1)
                     face_names.append(name)
-        userId = [i[2] for i in user][0]
         print(userId)
         print(class_id)
-        sql = "insert into login_histories (user_id, class_id) values(%s,%s)"
         cursor.execute(sql, (userId, class_id))
         con.commit()
         cursor.close()
         con.close()
-    return ",".join(face_names) + "," + userId
+    return ",".join(face_names) + "," + str(userId)
 if __name__ == '__main__':
     app.run(debug=True)
