@@ -17,7 +17,6 @@ function decodeBase64Image(dataString: string) {
 
     response.type = matches[1];
     response.data = matches[2];
-    console.log(Buffer.from(matches[2], 'base64'))
 
     return response;
 }
@@ -34,7 +33,6 @@ export const Login = () => {
     const capture = () => {
         const imageSrc = webcamRef.current.getScreenshot();
         takePiture({ image: decodeBase64Image(imageSrc).data })
-        console.log(images)
         setImgSrc(imageSrc)
     };
     const { addToast } = useToasts();
@@ -60,6 +58,7 @@ export const Login = () => {
                     }
                 })
                 const arrayMess = messName.data.split(",")
+                console.log(arrayMess)
                 const name = arrayMess[0]
                 if (name === "You are unknown first register your self") {
                     addToast("You are unknown first register your self", {
@@ -68,6 +67,12 @@ export const Login = () => {
                     });
 
                 }
+                else if (name === "Faces not found!") {
+                    addToast("Faces not found!", {
+                        appearance: 'info',
+                        autoDismiss: true,
+                    });
+                }
                 else if (name === "Unknown") {
                     addToast("Unknown", {
                         appearance: 'info',
@@ -75,8 +80,8 @@ export const Login = () => {
                     });
                 }
                 else {
-                    login({ ...values, name: name, time, isLogin: true, user_id: arrayMess[-1] })
-
+                    login({ ...values, name: name, time, isLogin: true, user_id: arrayMess[arrayMess.length - 1] })
+                    console.log(arrayMess[arrayMess.length - 1])
                     addToast(`Wellcome ${name}`, {
                         appearance: 'success',
                         autoDismiss: true,

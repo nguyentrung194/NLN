@@ -1,5 +1,7 @@
 export interface UserState {
     user_id?: any;
+    logs?: any[];
+    setLogs?: any;
     isLogin: boolean;
     name: string;
     email: string;
@@ -13,6 +15,11 @@ export interface UserState {
 
 export const UserReducer = (state: UserState, action: any) => {
     switch (action.type) {
+        case "LOGS":
+            return {
+                ...state,
+                logs: action.payload.logs,
+            };
         case "TAKE_PITURE":
             return {
                 ...state,
@@ -24,6 +31,7 @@ export const UserReducer = (state: UserState, action: any) => {
                 isLogin: true,
                 name: action.payload.name,
                 email: action.payload.email,
+                user_id: action.payload.user_id,
                 time: new Date(),
             };
         case "REGISTER":
@@ -40,6 +48,7 @@ export const UserReducer = (state: UserState, action: any) => {
                 name: '',
                 email: '',
                 time: null,
+                user_id: "",
             };
         default:
             return state;

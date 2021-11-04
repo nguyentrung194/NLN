@@ -40,8 +40,8 @@ def index():
 
 @app.route('/api/histories', methods=['GET'])
 def histories():
-    user_id = request.get_json()['user_id']
-    sql = "SELECT * FROM `login_histories` WHERE user_id = %s"
+    user_id = request.args.get("user_id")
+    sql = "SELECT * FROM `login_histories` WHERE `user_id` = %s"
     HOST = os.getenv('HOST') or "localhost"
     con = conn.connect(host=HOST, database='app_db',user='root', password='my_secret_password', charset='utf8', port=3306)
     cursor = con.cursor()
@@ -50,7 +50,7 @@ def histories():
     result = cursor.fetchall()
     cursor.close()
     con.close()
-    return result
+    return str(json.dumps(result))
 
 @app.route('/api/register', methods=['POST'])
 def register():
