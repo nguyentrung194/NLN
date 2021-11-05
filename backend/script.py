@@ -146,7 +146,7 @@ def login():
                     print("print(face_distances)")
                     print(face_distances)
                     best_match_index = np.argmin(face_distances)
-                    if (face_distances[best_match_index] <= 0.3):
+                    if (face_distances[best_match_index] <= 0.35):
                         name = known_face_names[best_match_index]
                     if(name == "Unknown"):
                         cursor.execute(sql, (userId, "-1"))
