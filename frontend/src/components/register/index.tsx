@@ -56,6 +56,7 @@ export const Register = () => {
                     data: {
                         name: values.name,
                         email: values.email,
+                        mssv: values.mssv,
                         encode: images.join(',,'),
                     }
                 })
