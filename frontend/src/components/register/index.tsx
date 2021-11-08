@@ -42,7 +42,7 @@ export const Register = () => {
         initialValues: {
             name: '',
             email: '',
-            mssv: '',
+            maso: '',
         },
         onSubmit: async (values) => {
             try {
@@ -56,7 +56,7 @@ export const Register = () => {
                     data: {
                         name: values.name,
                         email: values.email,
-                        mssv: values.mssv,
+                        maso: values.maso,
                         encode: images.join(',,'),
                     }
                 })
@@ -134,9 +134,9 @@ export const Register = () => {
                             <input
                                 className="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline"
                                 required
-                                name="mssv"
+                                name="maso"
                                 type="text"
-                                value={formik.values.mssv}
+                                value={formik.values.maso}
                                 onChange={formik.handleChange}
                             />
                         </div>

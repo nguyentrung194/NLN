@@ -122,7 +122,7 @@ def register():
     cursor = con.cursor()
     sql = "insert into users (name, encoding, email, mssv) values(%s,%s,%s,%s)"
     name = request.get_json()['name']
-    mssv = request.get_json()['mssv']
+    mssv = request.get_json()['maso']
     imgUpload = request.get_json()['encode']
     imgs = imgUpload.split(',,')
     encodings = []
