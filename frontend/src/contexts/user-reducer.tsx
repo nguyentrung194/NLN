@@ -8,6 +8,7 @@ export const UserContext = createContext<UserState>({
   email: '',
   images: [],
   logs: [],
+  classes: [],
 });
 
 const initialState: UserState = {
@@ -17,6 +18,7 @@ const initialState: UserState = {
   email: '',
   images: [],
   logs: [],
+  classes: [],
 };
 
 const UserContextProvider = ({ children }: any) => {
@@ -31,7 +33,11 @@ const UserContextProvider = ({ children }: any) => {
   };
 
   const setLogs = (payload: any) => {
-    dispatch({ type: "LOGS", payload });
+    dispatch({ type: "SET_LOGS", payload });
+  };
+
+  const setClasses = (payload: any) => {
+    dispatch({ type: "SET_CLASSES", payload });
   };
 
   const register = (payload: any) => {
@@ -48,6 +54,7 @@ const UserContextProvider = ({ children }: any) => {
     register,
     logout,
     setLogs,
+    setClasses,
     ...state,
   };
 

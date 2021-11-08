@@ -1,7 +1,9 @@
 export interface UserState {
     user_id?: any;
     logs?: any[];
+    classes?: any[];
     setLogs?: any;
+    setClasses?: any;
     isLogin: boolean;
     name: string;
     email: string;
@@ -15,10 +17,15 @@ export interface UserState {
 
 export const UserReducer = (state: UserState, action: any) => {
     switch (action.type) {
-        case "LOGS":
+        case "SET_LOGS":
             return {
                 ...state,
                 logs: action.payload.logs,
+            };
+        case "SET_CLASSES":
+            return {
+                ...state,
+                classes: action.payload.classes,
             };
         case "TAKE_PITURE":
             return {
@@ -49,6 +56,8 @@ export const UserReducer = (state: UserState, action: any) => {
                 email: '',
                 time: null,
                 user_id: "",
+                logs: [],
+                classes: [],
             };
         default:
             return state;

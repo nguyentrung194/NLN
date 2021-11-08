@@ -12,7 +12,8 @@ CORS(app)
 def get_data(email):
     user = []
     HOST = os.getenv('HOST') or "localhost"
-    con = conn.connect(host=HOST, database='app_db',user='root', password='my_secret_password', charset='utf8', port=3306)
+    PASS_DB = os.getenv("PASS_DB") or "my_secret_password"
+    con = conn.connect(host=HOST, database='app_db',user='root', password=PASS_DB, charset='utf8', port=3306)
     cursor = con.cursor()
     sql = "SELECT * FROM `users` WHERE `email` = %s"
     cursor.execute(sql, (email,))
@@ -43,11 +44,68 @@ def histories():
     user_id = request.args.get("user_id")
     sql = "SELECT * FROM `login_histories` WHERE `user_id` = %s"
     HOST = os.getenv('HOST') or "localhost"
-    con = conn.connect(host=HOST, database='app_db',user='root', password='my_secret_password', charset='utf8', port=3306)
+    PASS_DB = os.getenv("PASS_DB") or "my_secret_password"
+    con = conn.connect(host=HOST, database='app_db',user='root', password=PASS_DB, charset='utf8', port=3306)
     cursor = con.cursor()
     
     cursor.execute(sql, (user_id,))
     result = cursor.fetchall()
+    cursor.close()
+    con.close()
+    return str(json.dumps(result))
+
+@app.route('/api/users', methods=['GET'])
+def users():
+    sql = "SELECT * FROM `users`"
+    HOST = os.getenv('HOST') or "localhost"
+    PASS_DB = os.getenv("PASS_DB") or "my_secret_password"
+    con = conn.connect(host=HOST, database='app_db',user='root', password=PASS_DB, charset='utf8', port=3306)
+    cursor = con.cursor()
+    user_id = request.args.get("user_id")
+    if(user_id != None):
+        sql = "SELECT * FROM `users` WHERE `user_id` = %s"
+        cursor.execute(sql, (user_id,))
+        result = cursor.fetchall()
+        cursor.close()
+        con.close()
+        return str(json.dumps(result))
+    cursor.execute(sql)
+    result = cursor.fetchall()
+    cursor.close()
+    con.close()
+    return str(json.dumps(result))
+
+@app.route('/api/class', methods=['GET'])
+def classes():
+    sql = "SELECT * FROM `class`"
+    HOST = os.getenv('HOST') or "localhost"
+    PASS_DB = os.getenv("PASS_DB") or "my_secret_password"
+    con = conn.connect(host=HOST, database='app_db',user='root', password=PASS_DB, charset='utf8', port=3306)
+    cursor = con.cursor()
+    user_id = request.args.get("class_id")
+    if(user_id != None):
+        sql = "SELECT * FROM `class` WHERE `class_id` = %s"
+        cursor.execute(sql, (user_id,))
+        result = cursor.fetchall()
+        cursor.close()
+        con.close()
+        return str(json.dumps(result))
+    cursor.execute(sql)
+    result = cursor.fetchall()
+    cursor.close()
+    con.close()
+    return str(json.dumps(result))
+
+@app.route('/api/class', methods=['POST'])
+def classByClassName():
+    sql = "insert into class (name) values(%s)"
+    HOST = os.getenv('HOST') or "localhost"
+    PASS_DB = os.getenv("PASS_DB") or "my_secret_password"
+    con = conn.connect(host=HOST, database='app_db',user='root', password=PASS_DB, charset='utf8', port=3306)
+    cursor = con.cursor()
+    class_name = request.get_json()['class_name']
+    result = cursor.execute(sql, (class_name,))
+    con.commit()
     cursor.close()
     con.close()
     return str(json.dumps(result))
@@ -59,10 +117,12 @@ def register():
     if(user != []):
         return "Email exists!"
     HOST = os.getenv('HOST') or "localhost"
-    con = conn.connect(host=HOST, database='app_db',user='root', password='my_secret_password', charset='utf8', port=3306)
+    PASS_DB = os.getenv("PASS_DB") or "my_secret_password"
+    con = conn.connect(host=HOST, database='app_db',user='root', password=PASS_DB, charset='utf8', port=3306)
     cursor = con.cursor()
-    sql = "insert into users (name, encoding, email) values(%s,%s,%s)"
+    sql = "insert into users (name, encoding, email, mssv) values(%s,%s,%s,%s)"
     name = request.get_json()['name']
+    mssv = request.get_json()['mssv']
     imgUpload = request.get_json()['encode']
     imgs = imgUpload.split(',,')
     encodings = []
@@ -84,7 +144,7 @@ def register():
             encoding += str(i)+","
         encodingToSave += str(encoding) + ";"
     print(len(encodingToSave))
-    li = [name, encodingToSave, email]
+    li = [name, encodingToSave, email, mssv]
     value = tuple(li)
     cursor.execute(sql, value)
     con.commit()
@@ -104,7 +164,8 @@ def login():
     else:
         userId = [i[2] for i in user][0]
         HOST = os.getenv('HOST') or "localhost"
-        con = conn.connect(host=HOST, database='app_db',user='root', password='my_secret_password', charset='utf8', port=3306)
+        PASS_DB = os.getenv("PASS_DB") or "my_secret_password"
+        con = conn.connect(host=HOST, database='app_db',user='root', password=PASS_DB, charset='utf8', port=3306)
         cursor = con.cursor()
         known_face_encodings = [i[1] for i in user]
         print("known_face_encodings")
@@ -146,7 +207,7 @@ def login():
                     print("print(face_distances)")
                     print(face_distances)
                     best_match_index = np.argmin(face_distances)
-                    if (face_distances[best_match_index] <= 0.35):
+                    if (face_distances[best_match_index] <= 0.4):
                         name = known_face_names[best_match_index]
                     if(name == "Unknown"):
                         cursor.execute(sql, (userId, "-1"))

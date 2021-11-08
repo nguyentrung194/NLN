@@ -42,6 +42,7 @@ export const Register = () => {
         initialValues: {
             name: '',
             email: '',
+            mssv: '',
         },
         onSubmit: async (values) => {
             try {
@@ -81,73 +82,90 @@ export const Register = () => {
         },
     });
     return (
-        <div className="flex justify-center items-center min-h-screen">
-            <div className="max-w-sm pr-5">
-                <p>You should take 10 clear photos.</p>
-                {imgSrc ? <img src={imgSrc} alt="image preview2" /> : null}
-                <p>Count image: {images.length}</p>
-                <Webcam
-                    audio={false}
-                    height={720}
-                    forceScreenshotSourceSize={true}
-                    mirrored={true}
-                    screenshotQuality={1}
-                    ref={webcamRef}
-                    screenshotFormat="image/jpeg"
-                    width={1280}
-                    videoConstraints={videoConstraints}
-                />
-                <button
-                    className="py-6 my-2 text-lg font-bold cursor-pointer transition-all duration-300 
+        <div className="flex justify-center items-center">
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-8 min-h-screen">
+                <div className="flex justify-center items-center">
+                    <div className="max-w-sm p-5">
+                        <p>Bạn nên chụp 10 bức hình rõ mặt.</p>
+                        {imgSrc ? <img src={imgSrc} alt="image preview2" /> : null}
+                        <p>Số bức ảnh hiện tại: {images.length}</p>
+                        <Webcam
+                            audio={false}
+                            height={720}
+                            forceScreenshotSourceSize={true}
+                            mirrored={true}
+                            screenshotQuality={1}
+                            ref={webcamRef}
+                            screenshotFormat="image/jpeg"
+                            width={1280}
+                            videoConstraints={videoConstraints}
+                        />
+                        <button
+                            className="py-6 my-2 text-lg font-bold cursor-pointer transition-all duration-300 
                 delay-75 rounded-full appearance-none flex items-center justify-center flex-shrink-0
                 text-center no-underline text-white bg-blue-400 h-12 w-full disabled:opacity-50
                 hover:bg-blue-700 active:bg-blue-300 shadow-xl"
-                    onClick={capture}>Capture photo</button>
-            </div>
-            <div className="w-full max-w-xs">
-                <form
-                    className="bg-white shadow-md rounded px-8 pt-6 pb-8 mb-4"
-                    onSubmit={formik.handleSubmit}
-                >
-                    <div className="mb-4">
-                        <label className="block text-gray-700 text-sm font-bold mb-2" >
-                            Name
-                        </label>
-                        <input
-                            className="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline"
-                            required
-                            name="name"
-                            type="text"
-                            value={formik.values.name}
-                            onChange={formik.handleChange}
-                        />
+                            onClick={capture}>Chụp</button>
                     </div>
-                    <div className="mb-4">
-                        <label className="block text-gray-700 text-sm font-bold mb-2" >
-                            Username
-                        </label>
-                        <input
-                            className="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline"
-                            required
-                            name="email"
-                            type="text"
-                            value={formik.values.email}
-                            onChange={formik.handleChange}
-                        />
-                    </div>
-                    <div className="pb-8 w-64">
-                        <button
-                            className="py-6 my-2 text-lg font-bold cursor-pointer transition-all duration-300 
+                </div>
+                <div className="w-full max-w-xs flex justify-center items-center">
+                    <form
+                        className="bg-white shadow-md rounded px-8 pt-6 pb-8 mb-4"
+                        onSubmit={formik.handleSubmit}
+                    >
+                        <div className="mb-4">
+                            <label className="block text-gray-700 text-sm font-bold mb-2" >
+                                Họ tên:
+                            </label>
+                            <input
+                                className="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline"
+                                required
+                                name="name"
+                                type="text"
+                                value={formik.values.name}
+                                onChange={formik.handleChange}
+                            />
+                        </div>
+                        <div className="mb-4">
+                            <label className="block text-gray-700 text-sm font-bold mb-2" >
+                                Mã số sinh viên:
+                            </label>
+                            <input
+                                className="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline"
+                                required
+                                name="mssv"
+                                type="text"
+                                value={formik.values.mssv}
+                                onChange={formik.handleChange}
+                            />
+                        </div>
+                        <div className="mb-4">
+                            <label className="block text-gray-700 text-sm font-bold mb-2" >
+                                Email:
+                            </label>
+                            <input
+                                className="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline"
+                                required
+                                name="email"
+                                type="text"
+                                value={formik.values.email}
+                                onChange={formik.handleChange}
+                            />
+                        </div>
+                        <div className="pb-8 w-64">
+                            <button
+                                className="py-6 my-2 text-lg font-bold cursor-pointer transition-all duration-300 
             delay-75 rounded-full appearance-none flex items-center justify-center flex-shrink-0
             text-center no-underline text-white bg-blue-400 h-12 w-full disabled:opacity-50
             hover:bg-blue-700 active:bg-blue-300 shadow-xl"
-                            disabled={formik.isSubmitting}
-                            type="submit"
-                        >
-                            Register
-                        </button>
-                    </div>
-                </form>
+                                disabled={formik.isSubmitting}
+                                type="submit"
+                            >
+                                Đăng ký
+                            </button>
+                        </div>
+                    </form>
+                </div>
             </div>
         </div>
     )
