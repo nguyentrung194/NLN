@@ -31,7 +31,7 @@ export const Admin = () => {
         <div className="flex justify-center items-center">
             <div className="max-w-3xl">
                 <div className="p-2 text-center">
-                    <Link to="/create">Create new class</Link>
+                    <Link to="/admin/create">Create new class</Link>
                 </div>
                 <div className="grid grid-cols-10 p-2 border-b-2 border-blue-400">
                     <div className="p-2 col-span-2 text-center">
