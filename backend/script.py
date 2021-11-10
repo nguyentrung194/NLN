@@ -69,6 +69,14 @@ def users():
         cursor.close()
         con.close()
         return str(json.dumps(result))
+    class_id = request.args.get("class_id")
+    if(class_id != None):
+        sql = "SELECT * FROM `login_histories` WHERE `class_id` = %s"
+        cursor.execute(sql, (class_id,))
+        result = cursor.fetchall()
+        cursor.close()
+        con.close()
+        return str(json.dumps(result))
     cursor.execute(sql)
     result = cursor.fetchall()
     cursor.close()
@@ -82,10 +90,10 @@ def classes():
     PASS_DB = os.getenv("PASS_DB") or "my_secret_password"
     con = conn.connect(host=HOST, database='app_db',user='root', password=PASS_DB, charset='utf8', port=3306)
     cursor = con.cursor()
-    user_id = request.args.get("class_id")
-    if(user_id != None):
+    class_id = request.args.get("class_id")
+    if(class_id != None):
         sql = "SELECT * FROM `class` WHERE `class_id` = %s"
-        cursor.execute(sql, (user_id,))
+        cursor.execute(sql, (class_id,))
         result = cursor.fetchall()
         cursor.close()
         con.close()

@@ -31,8 +31,9 @@ function App() {
         <Routes>
           <Route element={<NavLayout />}>
             <Route path="/" element={<Navigate to="/admin" replace={true} />} />
-            <Route>
+            <Route path="/admin">
               <Route path="/admin" element={<AdminRoute />} />
+              <Route path="/admin:class_id" element={<AdminRoute />} />
               <Route path="/admin/create" element={<CreateNewClassRoute />} />
             </Route>
             <Route path="/*" element={<Navigate to="/" replace={true} />} />

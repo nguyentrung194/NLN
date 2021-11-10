@@ -54,7 +54,7 @@ export const Login = () => {
                     data: {
                         email: values.email,
                         encode: images.join(",,"),
-                        class_id: 1,
+                        class_id: values.class_id,
                     }
                 })
                 const arrayMess = messName.data.split(",")
